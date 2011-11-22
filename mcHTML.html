@@ -1,0 +1,365 @@
+<!--
+
+Author: Nareshkumar Rao
+Copyright: All Parts of this Document belongs to Nareshkumar Rao
+
+-->
+
+<html>
+
+<head>
+<style>
+#evn1{
+position:absolute;
+top:0;
+left:0;
+width:100%;
+height:30px;
+background:black;
+}
+
+#evn2{
+position:absolute;
+bottom:0;
+left:0;
+width:100%;
+height:30px;
+background:black;
+}
+
+#playBox{
+position:absolute;
+top:0;
+left:0;
+width:100%;
+height:100;
+background:blue;
+}
+
+.dirt{
+position:absolute;
+width:10px;
+height:10px;
+top:0px;
+left:0px;
+}
+
+#player{
+position:absolute;
+top:0px;
+left:0px;
+width:0px;
+height:0px;
+background:blue;
+}
+</style>
+
+<script>
+var height;
+var width;
+var cubeSize;
+var evnBoxSize;
+var playArea;
+var player;
+var chunk1;
+
+function createEnvBoxes()
+{
+evnBoxSize = (height-(cubeSize*5))/2;
+
+var evn1 = document.createElement("div");
+evn1.setAttribute("id","evn1");
+document.getElementById("envBox").appendChild(evn1);
+
+var evn2 = document.createElement("div");
+evn2.setAttribute("id","evn2");
+document.getElementById("envBox").appendChild(evn2);
+
+evn1.style.height=evnBoxSize+"px"
+evn2.style.height=evnBoxSize+"px"
+
+}
+
+function initPlayArea()
+{
+playArea = document.getElementById("playBox");
+playArea.style.height= (cubeSize*5)+"px";
+playArea.style.top = evnBoxSize+"px";
+}
+
+function render(chunk)
+{
+playArea.innerHTML="";
+
+var classes = [];
+
+for(var i = 0; i < chunk.length; i++)
+{
+	for(var i2 = 0; i2 < chunk[i].length; i2++)
+	{
+		var block = document.createElement("div");
+		playArea.appendChild(block);
+		block.style.width=cubeSize+"px";
+		block.style.height=cubeSize+"px";
+		block.style.top=(i*cubeSize)+"px";	
+		block.style.left=(cubeSize*i2)+"px";
+		block.style.position="absolute";
+		block.setAttribute("horz", i);
+		block.setAttribute("vertz", i2);
+		switch(chunk[i].substr(i2,1))
+		{
+			case "0":
+			block.style.background="lightblue";
+			break;
+			
+			case "1":
+			block.style.backgroundImage="url(stone.png)";
+			block.style.backgroundRepeat="repeat";
+			block.style.backgroundSize="100% 100%";
+			break;
+			
+			case "2":
+			block.style.backgroundImage="url(cobble.png)";
+			block.style.backgroundRepeat="repeat";
+			block.style.backgroundSize="100% 100%";
+			break;
+			
+			case "3":
+			block.style.backgroundImage="url(dirt.png)";
+			block.style.backgroundRepeat="repeat";
+			block.style.backgroundSize="100% 100%";
+			break;
+			
+			case "4":
+			block.style.backgroundImage="url(grass.png)";
+			block.style.backgroundRepeat="repeat";
+			block.style.backgroundSize="100% 100%";
+			break;
+			
+			case "5":
+			block.style.backgroundImage="url(plank.png)";
+			block.style.backgroundRepeat="repeat";
+			block.style.backgroundSize="100% 100%";
+			break;
+			
+			case "6":
+			block.style.backgroundImage="url(brick.png)";
+			block.style.backgroundRepeat="repeat";
+			block.style.backgroundSize="100% 100%";
+			break;
+		}
+		
+	}
+}
+
+}
+
+function initPlayer()
+{
+	var playerDiv = document.createElement("div");
+	document.getElementById("playBox").appendChild(playerDiv);
+	playerDiv.setAttribute("id", "player");
+	playerDiv.style.width = cubeSize+"px";
+	playerDiv.style.height = (cubeSize*2)+"px";
+	player = document.getElementById("player");
+	setInterval(startPhysics, 10);
+}
+
+var oldFoot;
+
+function ceilFoot(playerFoot)
+{
+var cubeSizes = new Array();
+	for(var i = 1;i<=5;i++)
+	{
+		if(playerFoot==cubeSize*i)
+		{
+			return playerFoot/cubeSize;
+		}
+		cubeSizes.push(cubeSize*i);
+	}
+	var nearest;
+	for(var h = 0; h < cubeSizes.length; h++)
+	{
+		
+		if(playerFoot<cubeSizes[h])
+		{
+			nearest=cubeSizes[h];
+			break;
+		}
+	}
+	return nearest/cubeSize;
+}
+
+function ceilHori(playerFoot)
+{
+var cubeSizes = new Array();
+	for(var i = 1;i<=16;i++)
+	{
+		if(playerFoot==cubeSize*i)
+		{
+			return playerFoot/cubeSize;
+		}
+		cubeSizes.push(cubeSize*i);
+	}
+	var nearest;
+	for(var h = 0; h < cubeSizes.length; h++)
+	{
+		
+		if(playerFoot<cubeSizes[h])
+		{
+			nearest=cubeSizes[h];
+			break;
+		}
+	}
+	return nearest/cubeSize;
+}
+
+function startPhysics()
+{	
+	var gravity = 3;
+	var playerStyles = window.getComputedStyle(player);
+	var playerTop = Number(playerStyles.top.substr(0,playerStyles.top.length-2));
+	var playerLeft = Number(playerStyles.left.substr(0,playerStyles.left.length-2));
+	
+	var playerFoot = playerTop+(cubeSize*2);
+	playerFoot = ceilFoot(playerFoot)-1;
+	
+	
+	var playerHori = playerLeft+(cubeSize*1);
+	playerHori=ceilHori(playerHori)-1;
+	
+	var playerOn = chunk1[playerFoot].substr(playerHori,1);
+	var playerOn2 = chunk1[playerFoot].substr(playerHori-1,1);
+	
+	
+	if(playerOn=="0" && playerOn2=="0")
+	{
+		player.style.top=(playerTop+gravity)+"px";
+	}
+	
+	
+	if(isRight && chunk1[playerFoot-1].substr(playerHori,1)==0)
+	{
+		player.style.left=(playerLeft+gravity)+"px"
+	}
+	if(isLeft && chunk1[playerFoot-1].substr(playerHori-1,1)==0)
+	{
+		player.style.left=(playerLeft-gravity)+"px"
+	}
+	
+	
+	
+	
+
+}
+
+var isLeft=false;
+var isRight=false;
+
+function keyDowned(event)
+{
+	switch(event.keyCode){
+		case 37:
+		isLeft=true;
+		break;
+
+		case 39:
+		isRight=true;
+		break;
+
+		default:
+		break;
+	}
+	event.returnValue=false;
+}
+
+function keyUped(event)
+{
+	switch(event.keyCode){
+		case 37:
+		isLeft=false;
+		break;
+
+		case 39:
+		isRight=false;
+		break;
+		
+		case 32:
+		player.style.top="0px";
+		break;
+		
+		default:
+		break;
+	}
+	event.returnValue=false;
+}
+function clicked(e)
+{
+	if(e.button==0)
+	{
+	e = e.target || e.srcElement;
+	if(e.getAttribute("horz")==null)
+	{
+		return;
+	}
+	var horz = e.getAttribute("horz");
+	var vertz = e.getAttribute("vertz");
+	
+	var tempChunk = chunk1[horz].substring(0,vertz);
+	tempChunk=tempChunk+"0";
+
+	tempChunk=tempChunk+chunk1[horz].substring(Number(vertz)+1,chunk1[horz].length);
+	chunk1[horz]=tempChunk;	
+	e.style.background="lightblue";
+	}
+	event.returnValue = false;
+}
+
+function rclicked(e)
+{
+	
+	event.returnValue=false;
+}
+function scrolld(e)
+{
+
+}
+window.onload=function()
+{
+
+height = window.innerHeight;
+width = window.innerWidth;
+cubeSize = Math.ceil(width / 16);
+
+
+createEnvBoxes();
+initPlayArea();
+
+chunk1 = "0550000000000000 0006000000000000 0006000000000000 4444544444444444 3333333333333333";
+chunk1 = chunk1.split(" ");
+render(chunk1);
+
+initPlayer();
+document.body.addEventListener('keydown', keyDowned, false);
+document.body.addEventListener('keyup', keyUped, false);
+document.body.addEventListener('mouseup', clicked, false);
+document.body.addEventListener('contextmenu', rclicked, false);
+
+document.body.addEventListener('DOMMouseScroll', scrolld, false);
+document.onmousewheel = scrolld;
+
+}
+</script>
+
+</head>
+
+<body>
+<div id="envBox"></div>
+<div id="playBox">
+
+</div>
+
+</body>
+
+</html>
