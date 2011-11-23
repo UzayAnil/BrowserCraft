@@ -5,6 +5,7 @@ var evnBoxSize;
 var playArea;
 var player;
 var chunk1;
+
 var objects=[];
 objects[0]={name:"Stone",img:"stone.png",id:"1"};
 objects[1]={name:"Cobblestone",img:"cobble.png", id:"2"};
@@ -56,6 +57,7 @@ function render(chunk)
 			block.style.position="absolute";
 			block.setAttribute("horz", i);
 			block.setAttribute("vertz", i2);
+			block.setAttribute("blockID", chunk[i].substr(i2,1));
 			switch(chunk[i].substr(i2,1))
 			{
 			case "0":
@@ -221,7 +223,7 @@ function keyDowned(event)
 	default:
 		break;
 	}
-	event.returnValue=false;
+	return false;
 }
 
 function keyUped(event)
@@ -242,7 +244,7 @@ function keyUped(event)
 	default:
 		break;
 	}
-	event.returnValue=false;
+	return false;
 }
 function clicked(e)
 {
@@ -255,57 +257,80 @@ function clicked(e)
 		}
 		var horz = e.getAttribute("horz");
 		var vertz = e.getAttribute("vertz");
+		var curChunk = chunk1[horz];
 		
-		var tempChunk = chunk1[horz].substring(0,vertz);
-		tempChunk=tempChunk+"0";
-
-		tempChunk=tempChunk+chunk1[horz].substring(Number(vertz)+1,chunk1[horz].length);
+		var tempChunk = curChunk.substring(0,vertz);
+		tempChunk+= "0";
+		tempChunk+= curChunk.substring(Number(vertz)+1,curChunk.length);
 		chunk1[horz]=tempChunk;	
+		
+		e.setAttribute("blockID", "0");
 		e.style.background="lightblue";
 	}
-	event.returnValue = false;
+	return false;
 }
 
 function rclicked(e)
 {
 	e = e.target || e.srcElement;
-	if(e.getAttribute("horz")==null)
+	
+	if(e.getAttribute("horz")==null || e.getAttribute("blockID")!="0")
 	{
-		event.returnValue=false;
+		return false;
 	}
 	var horz = e.getAttribute("horz");
 	var vertz = e.getAttribute("vertz");
+	var curChunk = chunk1[horz];
 	
-	var tempChunk = chunk1[horz].substring(0,vertz);
-	tempChunk=tempChunk+objects[curSel].id;
+	var tempChunk = curChunk.substring(0,vertz);
+	tempChunk+= objects[curSel].id;
+	tempChunk+= curChunk.substring(Number(vertz)+1,curChunk.length);
+	
+	chunk1[horz]=tempChunk;
 
-	tempChunk=tempChunk+chunk1[horz].substring(Number(vertz)+1,chunk1[horz].length);
-	chunk1[horz]=tempChunk;;
-	console.log("url('"+objects[curSel].img+"');");
+	e.setAttribute("blockID", objects[curSel].id);
 	e.style.backgroundImage="url("+objects[curSel].img+")";
 	e.style.backgroundRepeat="repeat";
 	e.style.backgroundSize="100% 100%";
 	
-	event.returnValue=false;
+	return false;
 }
 var curSel=0;
 function scrolld(e)
 {
-	var delta = e.wheelDelta / 60;
-	switch(delta)
-	{
-	case 2:
-		curSel+=1;
-		if(curSel>=objects.length){curSel=0}
-		document.title=objects[curSel].name;
-		break;
-		
-	case -2:
-		curSel-=1;
-		if(curSel<=-1){curSel=objects.length-1}
-		document.title=objects[curSel].name;
-		break;
-		
+	if(e.wheelDelta){
+		var delta = e.wheelDelta / 60;
+		switch(delta)
+		{
+		case 2:
+			curSel+=1;
+			if(curSel>=objects.length){curSel=0}
+			document.title=objects[curSel].name;
+			break;
+			
+		case -2:
+			curSel-=1;
+			if(curSel<=-1){curSel=objects.length-1}
+			document.title=objects[curSel].name;
+			break;
+			
+		}}else{
+		var delta = e.detail;
+		switch(delta)
+		{
+		case -3:
+			curSel+=1;
+			if(curSel>=objects.length){curSel=0}
+			document.title=objects[curSel].name;
+			break;
+			
+		case 3:
+			curSel-=1;
+			if(curSel<=-1){curSel=objects.length-1}
+			document.title=objects[curSel].name;
+			break;
+			
+		}
 	}
 }
 window.onload=function()
@@ -324,11 +349,14 @@ window.onload=function()
 	render(chunk1);
 
 	initPlayer();
-	document.body.addEventListener('keydown', keyDowned, false);
-	document.body.addEventListener('keyup', keyUped, false);
-	document.body.addEventListener('mouseup', clicked, false);
-	document.body.addEventListener('contextmenu', rclicked, false);
-	document.body.addEventListener('DOMMouseScroll', scrolld, false);
+	document.onkeydown=keyDowned;
+	document.onkeyup=keyUped;
+	
+	document.addEventListener('mouseup', clicked, false);
+	
+	document.oncontextmenu=rclicked;
+	
+	document.addEventListener('DOMMouseScroll', scrolld, false);
 	document.onmousewheel = scrolld;
 
 }
