@@ -194,11 +194,11 @@ function startPhysics()
 	}
 	
 	
-	if(isRight && chunk1[playerFoot-1].substr(playerHori,1)==0)
+	if(isRight && chunk1[playerFoot-1].substr(playerHori,1)==0 && chunk1[playerFoot-2].substr(playerHori,1)==0)
 	{
 		player.style.left=(playerLeft+gravity)+"px"
 	}
-	if(isLeft && chunk1[playerFoot-1].substr(playerHori-1,1)==0)
+	if(isLeft && chunk1[playerFoot-1].substr(playerHori-1,1)==0 && chunk1[playerFoot-2].substr(playerHori-1,1)==0)
 	{
 		player.style.left=(playerLeft-gravity)+"px"
 	}
@@ -333,7 +333,6 @@ window.onload=function()
 	document.body.addEventListener('keyup', keyUped, false);
 	document.body.addEventListener('mouseup', clicked, false);
 	document.body.addEventListener('contextmenu', rclicked, false);
-
 	document.body.addEventListener('DOMMouseScroll', scrolld, false);
 	document.onmousewheel = scrolld;
 
