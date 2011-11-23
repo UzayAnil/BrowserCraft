@@ -12,12 +12,7 @@ objects[2]={name:"Dirt",img:"dirt.png", id:"3"};
 objects[3]={name:"Grass",img:"grass.png", id:"4"};
 objects[4]={name:"Plank",img:"plank.png",id:"5"};
 objects[5]={name:"Brick",img:"brick.png",id:"6"};
-objects["stone"]={name:"Stone",img:"stone.png",id:"1"};
-objects["cobble"]={name:"Cobblestone",img:"cobble.png", id:"2"};
-objects["dirt"]={name:"Dirt",img:"dirt.png", id:"3"};
-objects["grass"]={name:"Grass",img:"grass.png", id:"4"};
-objects["plank"]={name:"Plank",img:"plank.png",id:"5"};
-objects["brick"]={name:"Brick",img:"brick.png",id:"6"};
+
 function createEnvBoxes()
 {
 	evnBoxSize = (height-(cubeSize*5))/2;
