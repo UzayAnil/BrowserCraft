@@ -1,22 +1,33 @@
-var height;
-var width;
-var cubeSize;
-var evnBoxSize;
-var playArea;
-var player;
-var chunk1;
+var BCEngine = new Object();
+BCEngine.height=0;
+BCEngine.width=0;
+BCEngine.cubeSize=0;
+BCEngine.evnBoxSize=0;
+BCEngine.playArea=null;
+BCEngine.player=null;
+BCEngine.currentSelection=0;
 
-var objects=[];
-objects[0]={name:"Stone",img:"stone.png",id:"1"};
-objects[1]={name:"Cobblestone",img:"cobble.png", id:"2"};
-objects[2]={name:"Dirt",img:"dirt.png", id:"3"};
-objects[3]={name:"Grass",img:"grass.png", id:"4"};
-objects[4]={name:"Plank",img:"plank.png",id:"5"};
-objects[5]={name:"Brick",img:"brick.png",id:"6"};
+BCEngine.map=new Object();
+BCEngine.map.chunk1=null;
 
-function createEnvBoxes()
+BCEngine.objects=[];
+BCEngine.objects[0]={name:"Stone",img:"stone.png",id:"1"};
+BCEngine.objects[1]={name:"Cobblestone",img:"cobble.png", id:"2"};
+BCEngine.objects[2]={name:"Dirt",img:"dirt.png", id:"3"};
+BCEngine.objects[3]={name:"Grass",img:"grass.png", id:"4"};
+BCEngine.objects[4]={name:"Plank",img:"plank.png",id:"5"};
+BCEngine.objects[5]={name:"Brick",img:"brick.png",id:"6"};
+
+BCEngine.keyPresses = new Object();
+BCEngine.keyPresses.isLeft=false;
+BCEngine.keyPresses.isRight=false;
+
+BCEngine.utils = new Object();
+BCEngine.eventHandlers = new Object();
+
+BCEngine.createEnvBoxes=function()
 {
-	evnBoxSize = (height-(cubeSize*5))/2;
+	BCEngine.evnBoxSize = ( BCEngine.height -( BCEngine.cubeSize * 5 ) ) /2 ;
 
 	var evn1 = document.createElement("div");
 	evn1.setAttribute("id","evn1");
@@ -26,35 +37,33 @@ function createEnvBoxes()
 	evn2.setAttribute("id","evn2");
 	document.getElementById("envBox").appendChild(evn2);
 
-	evn1.style.height=evnBoxSize+"px"
-	evn2.style.height=evnBoxSize+"px"
+	evn1.style.height = BCEngine.evnBoxSize + "px"
+	evn2.style.height = BCEngine.evnBoxSize + "px"
 
 }
 
-function initPlayArea()
+BCEngine.initPlayArea = function()
 {
-	playArea = document.getElementById("playBox");
-	playArea.style.height= (cubeSize*5)+"px";
-	playArea.style.top = evnBoxSize+"px";
+	BCEngine.playArea = document.getElementById("playBox");
+	BCEngine.playArea.style.height = ( BCEngine.cubeSize * 5 ) + "px";
+	BCEngine.playArea.style.top = BCEngine.evnBoxSize+"px";
 }
 
-function render(chunk)
+BCEngine.renderChunk = function(chunk)
 {
-	playArea.innerHTML="";
-
-	var classes = [];
+	BCEngine.playArea.innerHTML = "";
 
 	for(var i = 0; i < chunk.length; i++)
 	{
 		for(var i2 = 0; i2 < chunk[i].length; i2++)
 		{
 			var block = document.createElement("div");
-			playArea.appendChild(block);
-			block.style.width=cubeSize+"px";
-			block.style.height=cubeSize+"px";
-			block.style.top=(i*cubeSize)+"px";	
-			block.style.left=(cubeSize*i2)+"px";
-			block.style.position="absolute";
+			BCEngine.playArea.appendChild(block);
+			block.style.width = BCEngine.cubeSize + "px";
+			block.style.height = BCEngine.cubeSize + "px";
+			block.style.top = ( i * BCEngine.cubeSize ) + "px";	
+			block.style.left = ( BCEngine.cubeSize * i2 ) + "px";
+			block.style.position = "absolute";
 			block.setAttribute("horz", i);
 			block.setAttribute("vertz", i2);
 			block.setAttribute("blockID", chunk[i].substr(i2,1));
@@ -106,29 +115,29 @@ function render(chunk)
 
 }
 
-function initPlayer()
+BCEngine.initPlayer = function()
 {
 	var playerDiv = document.createElement("div");
 	document.getElementById("playBox").appendChild(playerDiv);
 	playerDiv.setAttribute("id", "player");
-	playerDiv.style.width = cubeSize+"px";
-	playerDiv.style.height = (cubeSize*2)+"px";
-	player = document.getElementById("player");
-	setInterval(startPhysics, 10);
+	playerDiv.style.width = BCEngine.cubeSize + "px";
+	playerDiv.style.height = ( BCEngine.cubeSize * 2 ) + "px";
+	
+	BCEngine.player = document.getElementById("player");
+	
+	setInterval(BCEngine.startPhysics, 10);
 }
 
-var oldFoot;
-
-function ceilFoot(playerFoot)
+BCEngine.utils.ceilFoot = function(playerFoot)
 {
 	var cubeSizes = new Array();
 	for(var i = 1;i<=5;i++)
 	{
-		if(playerFoot==cubeSize*i)
+		if( playerFoot == BCEngine.cubeSize*i)
 		{
-			return playerFoot/cubeSize;
+			return playerFoot/BCEngine.cubeSize;
 		}
-		cubeSizes.push(cubeSize*i);
+		cubeSizes.push(BCEngine.cubeSize*i);
 	}
 	var nearest;
 	for(var h = 0; h < cubeSizes.length; h++)
@@ -140,64 +149,64 @@ function ceilFoot(playerFoot)
 			break;
 		}
 	}
-	return nearest/cubeSize;
+	return nearest/BCEngine.cubeSize;
 }
 
-function ceilHori(playerFoot)
+BCEngine.utils.ceilHori = function(playerFoot)
 {
 	var cubeSizes = new Array();
 	for(var i = 1;i<=16;i++)
 	{
-		if(playerFoot==cubeSize*i)
+		if(playerFoot == BCEngine.cubeSize*i)
 		{
-			return playerFoot/cubeSize;
+			return playerFoot/BCEngine.cubeSize;
 		}
-		cubeSizes.push(cubeSize*i);
+		cubeSizes.push(BCEngine.cubeSize*i);
 	}
 	var nearest;
 	for(var h = 0; h < cubeSizes.length; h++)
 	{
 		
-		if(playerFoot<cubeSizes[h])
+		if( playerFoot< cubeSizes[h])
 		{
 			nearest=cubeSizes[h];
 			break;
 		}
 	}
-	return nearest/cubeSize;
+	return nearest/BCEngine.cubeSize;
 }
 
-function startPhysics()
+BCEngine.startPhysics = function()
 {	
 	var gravity = 3;
-	var playerStyles = window.getComputedStyle(player);
+	var playerStyles = window.getComputedStyle(BCEngine.player);
 	var playerTop = Number(playerStyles.top.substr(0,playerStyles.top.length-2));
 	var playerLeft = Number(playerStyles.left.substr(0,playerStyles.left.length-2));
 	
-	var playerFoot = playerTop+(cubeSize*2);
-	playerFoot = ceilFoot(playerFoot)-1;
+	var playerFoot = playerTop + ( BCEngine.cubeSize * 2);
+	playerFoot = BCEngine.utils.ceilFoot(playerFoot)-1;
 	
 	
-	var playerHori = playerLeft+(cubeSize*1);
-	playerHori=ceilHori(playerHori)-1;
+	var playerHori = playerLeft + ( BCEngine.cubeSize * 1 );
+	playerHori=BCEngine.utils.ceilHori(playerHori)-1;
 	
-	var playerOn = chunk1[playerFoot].substr(playerHori,1);
-	var playerOn2 = chunk1[playerFoot].substr(playerHori-1,1);
+	var playerOn = BCEngine.map.chunk1[playerFoot].substr(playerHori,1);
+	var playerOn2 = BCEngine.map.chunk1[playerFoot].substr(playerHori-1,1);
 	
 	
 	if(playerOn=="0" && playerOn2=="0")
 	{
-		player.style.top=(playerTop+gravity)+"px";
+		BCEngine.player.style.top=(playerTop+gravity)+"px";
 	}
 	
 	
-	if(isRight && chunk1[playerFoot-1].substr(playerHori,1)==0 && chunk1[playerFoot-2].substr(playerHori,1)==0)
+	if(BCEngine.keyPresses.isRight && BCEngine.map.chunk1[playerFoot-1].substr(playerHori,1)==0 && BCEngine.map.chunk1[playerFoot-2].substr(playerHori,1)==0)
 	{
-		player.style.left=(playerLeft+gravity)+"px"
+		BCEngine.player.style.left=(playerLeft+gravity)+"px"
 	}
-	if(isLeft && chunk1[playerFoot-1].substr(playerHori-1,1)==0 && chunk1[playerFoot-2].substr(playerHori-1,1)==0)
+	if(BCEngine.keyPresses.isLeft && BCEngine.map.chunk1[playerFoot-1].substr(playerHori-1,1)==0 && BCEngine.map.chunk1[playerFoot-2].substr(playerHori-1,1)==0)
 	{
-		player.style.left=(playerLeft-gravity)+"px"
+		BCEngine.player.style.left=(playerLeft-gravity)+"px"
 	}
 	
 	
@@ -206,18 +215,15 @@ function startPhysics()
 
 }
 
-var isLeft=false;
-var isRight=false;
-
-function keyDowned(event)
+BCEngine.eventHandlers.keyDownEvent = function(event)
 {
 	switch(event.keyCode){
 	case 37:
-		isLeft=true;
+		BCEngine.keyPresses.isLeft=true;
 		break;
 
 	case 39:
-		isRight=true;
+		BCEngine.keyPresses.isRight=true;
 		break;
 
 	default:
@@ -226,19 +232,19 @@ function keyDowned(event)
 	return false;
 }
 
-function keyUped(event)
+BCEngine.eventHandlers.keyUpEvent = function(event)
 {
 	switch(event.keyCode){
 	case 37:
-		isLeft=false;
+		BCEngine.keyPresses.isLeft=false;
 		break;
 
 	case 39:
-		isRight=false;
+		BCEngine.keyPresses.isRight=false;
 		break;
 		
 	case 32:
-		player.style.top="0px";
+		BCEngine.player.style.top="0px";
 		break;
 		
 	default:
@@ -246,7 +252,7 @@ function keyUped(event)
 	}
 	return false;
 }
-function clicked(e)
+BCEngine.eventHandlers.mouseUpEvent = function(e)
 {
 	if(e.button==0)
 	{
@@ -257,12 +263,12 @@ function clicked(e)
 		}
 		var horz = e.getAttribute("horz");
 		var vertz = e.getAttribute("vertz");
-		var curChunk = chunk1[horz];
+		var curChunk = BCEngine.map.chunk1[horz];
 		
 		var tempChunk = curChunk.substring(0,vertz);
 		tempChunk+= "0";
 		tempChunk+= curChunk.substring(Number(vertz)+1,curChunk.length);
-		chunk1[horz]=tempChunk;	
+		BCEngine.map.chunk1[horz]=tempChunk;	
 		
 		e.setAttribute("blockID", "0");
 		e.style.background="lightblue";
@@ -270,7 +276,7 @@ function clicked(e)
 	return false;
 }
 
-function rclicked(e)
+BCEngine.eventHandlers.rightClickEvent = function(e)
 {
 	e = e.target || e.srcElement;
 	
@@ -280,38 +286,38 @@ function rclicked(e)
 	}
 	var horz = e.getAttribute("horz");
 	var vertz = e.getAttribute("vertz");
-	var curChunk = chunk1[horz];
+	var curChunk = BCEngine.map.chunk1[horz];
 	
 	var tempChunk = curChunk.substring(0,vertz);
-	tempChunk+= objects[curSel].id;
+	tempChunk+= BCEngine.objects[BCEngine.currentSelection].id;
 	tempChunk+= curChunk.substring(Number(vertz)+1,curChunk.length);
 	
-	chunk1[horz]=tempChunk;
+	BCEngine.map.chunk1[horz]=tempChunk;
 
-	e.setAttribute("blockID", objects[curSel].id);
-	e.style.backgroundImage="url("+objects[curSel].img+")";
+	e.setAttribute("blockID", BCEngine.objects[BCEngine.currentSelection].id);
+	e.style.backgroundImage="url("+BCEngine.objects[BCEngine.currentSelection].img+")";
 	e.style.backgroundRepeat="repeat";
 	e.style.backgroundSize="100% 100%";
 	
 	return false;
 }
-var curSel=0;
-function scrolld(e)
+
+BCEngine.eventHandlers.scrollEvent = function(e)
 {
 	if(e.wheelDelta){
 		var delta = e.wheelDelta / 60;
 		switch(delta)
 		{
 		case 2:
-			curSel+=1;
-			if(curSel>=objects.length){curSel=0}
-			document.title=objects[curSel].name;
+			BCEngine.currentSelection+=1;
+			if(BCEngine.currentSelection>=BCEngine.objects.length){BCEngine.currentSelection=0}
+			document.title=BCEngine.objects[BCEngine.currentSelection].name;
 			break;
 			
 		case -2:
-			curSel-=1;
-			if(curSel<=-1){curSel=objects.length-1}
-			document.title=objects[curSel].name;
+			BCEngine.currentSelection-=1;
+			if(BCEngine.currentSelection<=-1){BCEngine.currentSelection=BCEngine.objects.length-1}
+			document.title=BCEngine.objects[BCEngine.currentSelection].name;
 			break;
 			
 		}}else{
@@ -319,44 +325,44 @@ function scrolld(e)
 		switch(delta)
 		{
 		case -3:
-			curSel+=1;
-			if(curSel>=objects.length){curSel=0}
-			document.title=objects[curSel].name;
+			BCEngine.currentSelection+=1;
+			if(BCEngine.currentSelection>=BCEngine.objects.length){BCEngine.currentSelection=0}
+			document.title=BCEngine.objects[BCEngine.currentSelection].name;
 			break;
 			
 		case 3:
-			curSel-=1;
-			if(curSel<=-1){curSel=objects.length-1}
-			document.title=objects[curSel].name;
+			BCEngine.currentSelection-=1;
+			if(BCEngine.currentSelection<=-1){BCEngine.currentSelection=BCEngine.objects.length-1}
+			document.title=BCEngine.objects[BCEngine.currentSelection].name;
 			break;
 			
 		}
 	}
 }
+
 window.onload=function()
 {
 
-	height = window.innerHeight;
-	width = window.innerWidth;
-	cubeSize = Math.ceil(width / 16);
-
-
-	createEnvBoxes();
-	initPlayArea();
-
-	chunk1 = "0550000000000000 0006000000000000 0006000000000000 4444544444444444 3333333333333333";
-	chunk1 = chunk1.split(" ");
-	render(chunk1);
-
-	initPlayer();
-	document.onkeydown=keyDowned;
-	document.onkeyup=keyUped;
+	BCEngine.height = window.innerHeight;
+	BCEngine.width = window.innerWidth;
+	BCEngine.cubeSize = Math.ceil(BCEngine.width / 16);
 	
-	document.addEventListener('mouseup', clicked, false);
+	BCEngine.map.chunk1 = "0550000000000000 0006000000000000 0006000000000000 4444544444444444 3333333333333333";
+	BCEngine.map.chunk1 = BCEngine.map.chunk1.split(" ");
 	
-	document.oncontextmenu=rclicked;
+	BCEngine.createEnvBoxes();
+	BCEngine.initPlayArea();
+	BCEngine.renderChunk(BCEngine.map.chunk1);
+	BCEngine.initPlayer();
 	
-	document.addEventListener('DOMMouseScroll', scrolld, false);
-	document.onmousewheel = scrolld;
+	document.onkeydown=BCEngine.eventHandlers.keyDownEvent;
+	document.onkeyup=BCEngine.eventHandlers.keyUpEvent;
+	
+	document.addEventListener('mouseup', BCEngine.eventHandlers.mouseUpEvent, false);
+	
+	document.oncontextmenu=BCEngine.eventHandlers.rightClickEvent;
+	
+	document.addEventListener('DOMMouseScroll', BCEngine.eventHandlers.scrollEvent, false);
+	document.onmousewheel = BCEngine.eventHandlers.scrollEvent;
 
 }
