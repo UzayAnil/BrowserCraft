@@ -348,7 +348,7 @@ window.onload=function()
 	//Sets the height, width and cubeSize variables
 	BCEngine.height = window.innerHeight;
 	BCEngine.width = window.innerWidth;
-	BCEngine.cubeSize = Math.ceil(BCEngine.width / 16);
+	BCEngine.cubeSize = (BCEngine.width / 16);
 	
 	//This is here because currently only 1 chunk is playable. In the future, this won't be here and
 	//chunks will render automatically.
