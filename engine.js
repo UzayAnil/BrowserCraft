@@ -369,6 +369,7 @@ window.onload=function()
 	document.onkeydown=BCEngine.eventHandlers.keyDownEvent;
 	document.onkeyup=BCEngine.eventHandlers.keyUpEvent;
 	document.addEventListener('mouseup', BCEngine.eventHandlers.mouseUpEvent, false);
+	document.addEventListener('mousedown', function(){return false}, false);
 	document.oncontextmenu=BCEngine.eventHandlers.rightClickEvent;
 	document.addEventListener('DOMMouseScroll', BCEngine.eventHandlers.scrollEvent, false);
 	document.onmousewheel = BCEngine.eventHandlers.scrollEvent;
