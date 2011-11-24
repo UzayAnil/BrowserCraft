@@ -61,6 +61,12 @@ BCEngine.keyPresses.isRight=false;
 //These utils include functions to help calculate certain values needed for physics/etc.
 BCEngine.utils = new Object();
 
+BCEngine.gravity=3;
+BCEngine.sliding = new Object();
+BCEngine.sliding.isSliding = false;
+BCEngine.sliding.curSpeed=0;
+BCEngine.sliding.slideDirection="right";
+
 //The handlers for all the events.
 BCEngine.eventHandlers = new Object();
 
@@ -171,9 +177,6 @@ BCEngine.initPlayer = function()
 
 BCEngine.startPhysics = function()
 {	
-	//The amount of gravity (which is  the player speed)
-	var gravity = 3;
-	
 	//Get the styles of the player HTML DIV
 	var playerStyles = window.getComputedStyle(BCEngine.player);
 	
@@ -196,7 +199,7 @@ BCEngine.startPhysics = function()
 	//If player is stepping on air, fall
 	if(playerOn=="0" && playerOn2=="0")
 	{
-		BCEngine.player.style.top=(playerTop+gravity)+"px";
+		BCEngine.player.style.top=(playerTop+BCEngine.gravity)+"px";
 	}
 	
 	//Move, if
@@ -205,11 +208,29 @@ BCEngine.startPhysics = function()
 	//There is nothing blocking the uppper half of the player
 	if(BCEngine.keyPresses.isRight && BCEngine.map.chunk1[playerFoot-1].substr(playerHori,1)==0 && BCEngine.map.chunk1[playerFoot-2].substr(playerHori,1)==0)
 	{
-		BCEngine.player.style.left=(playerLeft+gravity)+"px"
+		BCEngine.player.style.left=(playerLeft+BCEngine.gravity)+"px"
 	}
 	if(BCEngine.keyPresses.isLeft && BCEngine.map.chunk1[playerFoot-1].substr(playerHori-1,1)==0 && BCEngine.map.chunk1[playerFoot-2].substr(playerHori-1,1)==0)
 	{
-		BCEngine.player.style.left=(playerLeft-gravity)+"px"
+		BCEngine.player.style.left=(playerLeft-BCEngine.gravity)+"px"
+	}
+	if(BCEngine.sliding.isSliding)
+	{
+		BCEngine.sliding.curSpeed=BCEngine.sliding.curSpeed-0.2;
+		if(BCEngine.sliding.curSpeed<1)
+		{
+			BCEngine.sliding.isSliding=false;
+		}else{
+			if(BCEngine.sliding.slideDirection=="right" && BCEngine.map.chunk1[playerFoot-1].substr(playerHori,1)==0 && BCEngine.map.chunk1[playerFoot-2].substr(playerHori,1)==0)
+			{
+				BCEngine.player.style.left=(playerLeft+BCEngine.sliding.curSpeed)+"px";
+			}else if(BCEngine.sliding.slideDirection=="left" && BCEngine.map.chunk1[playerFoot-1].substr(playerHori-1,1)==0 && BCEngine.map.chunk1[playerFoot-2].substr(playerHori-1,1)==0)
+			{
+				BCEngine.player.style.left=(playerLeft-BCEngine.sliding.curSpeed)+"px";
+			}else{
+				BCEngine.sliding.isSliding=false;
+			}
+		}
 	}
 	
 
@@ -238,10 +259,16 @@ BCEngine.eventHandlers.keyUpEvent = function(event)
 	switch(event.keyCode){
 	case 37:
 		BCEngine.keyPresses.isLeft=false;
+		BCEngine.sliding.isSliding=true;
+		BCEngine.sliding.curSpeed=3;
+		BCEngine.sliding.slideDirection="left";
 		break;
 
 	case 39:
 		BCEngine.keyPresses.isRight=false;
+		BCEngine.sliding.isSliding=true;
+		BCEngine.sliding.curSpeed=3;
+		BCEngine.sliding.slideDirection="right";
 		break;
 		
 	case 32:
