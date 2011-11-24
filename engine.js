@@ -46,12 +46,12 @@ id: The block ID. (The renderer uses the same ID's to render a chunk)
 */
 
 BCEngine.objects=[];
-BCEngine.objects[0]={name:"Stone",img:"stone.png",id:"1", strength:"10"};
-BCEngine.objects[1]={name:"Cobblestone",img:"cobble.png", id:"2", strength:"10"};
-BCEngine.objects[2]={name:"Dirt",img:"dirt.png", id:"3", strength:"2"};
-BCEngine.objects[3]={name:"Grass",img:"grass.png", id:"4", strength:"2"};
-BCEngine.objects[4]={name:"Plank",img:"plank.png",id:"5", strength:"5"};
-BCEngine.objects[5]={name:"Brick",img:"brick.png",id:"6", strength:"15"};
+BCEngine.objects[0]={name:"Stone",img:"stone.png",id:"1", strength:"2"};
+BCEngine.objects[1]={name:"Cobblestone",img:"cobble.png", id:"2", strength:"2"};
+BCEngine.objects[2]={name:"Dirt",img:"dirt.png", id:"3", strength:"0.5"};
+BCEngine.objects[3]={name:"Grass",img:"grass.png", id:"4", strength:"0.5"};
+BCEngine.objects[4]={name:"Plank",img:"plank.png",id:"5", strength:"1.5"};
+BCEngine.objects[5]={name:"Brick",img:"brick.png",id:"6", strength:"4"};
 
 //Key Presses to determine if a key is being pressed or not.
 BCEngine.keyPresses = new Object();
@@ -66,6 +66,10 @@ BCEngine.sliding = new Object();
 BCEngine.sliding.isSliding = false;
 BCEngine.sliding.curSpeed=0;
 BCEngine.sliding.slideDirection="right";
+
+BCEngine.blockDestruction=new Object();
+BCEngine.blockDestruction.lastReferredBlock=null;
+BCEngine.blockDestruction.lastRunningTimer=null;
 
 //The handlers for all the events.
 BCEngine.eventHandlers = new Object();
@@ -140,17 +144,22 @@ BCEngine.renderChunk = function(chunk)
 			block.setAttribute("vertz", i2);
 			block.setAttribute("blockID", chunk[i].substr(i2,1));
 			
+			
+			
 			//If the created block should be air, set it's color to light blue
 			//then exit the function
 			if(chunk[i].substr(i2,1)=="0")
 			{
 				block.style.background="lightblue"
 			}else{
+				var accessNum = Number( chunk[i].substr(i2,1) ) - 1;
+				
+				//Set the strength attribute of the block
+				block.setAttribute("strength", BCEngine.objects[ accessNum ].strength);
 				
 				//If the created block is not air, get the background url from the BCEngine.objects object.
-				var accessNum = Number( chunk[i].substr(i2,1) ) - 1;
 				block.style.background="url(" + BCEngine.objects[ accessNum ].img + ")";
-				
+			
 				//Then give it the neccessary style attributes.
 				block.style.backgroundRepeat="repeat";
 				block.style.backgroundSize="100% 100%";
@@ -281,31 +290,66 @@ BCEngine.eventHandlers.keyUpEvent = function(event)
 	return false;
 }
 
+BCEngine.removeBlock = function(e)
+{
+	BCEngine.blockDestruction.lastRunningTimer=null;
+	var horz = e.getAttribute("horz");
+	var vertz = e.getAttribute("vertz");
+	var curChunk = BCEngine.map.chunk1[horz];
+		
+	var tempChunk = curChunk.substring(0,vertz);
+	tempChunk+= "0";
+	tempChunk+= curChunk.substring(Number(vertz)+1,curChunk.length);
+	BCEngine.map.chunk1[horz]=tempChunk;	
+		
+	e.setAttribute("blockID", "0");
+	e.style.background="lightblue";
+	BCEngine.playArea.removeChild(BCEngine.blockDestruction.lastReferredBlock);
+	BCEngine.blockDestruction.lastReferredBlock=null;
+	return false;
+}
+
 //Turns a block into air once clicked
-BCEngine.eventHandlers.mouseUpEvent = function(e)
+BCEngine.eventHandlers.mouseDownEvent = function(e)
 {
 	if(e.button==0)
 	{
 		e = e.target || e.srcElement;
-		if(e.getAttribute("horz")==null)
+		if(e.getAttribute("horz")==null || BCEngine.blockDestruction.lastReferredBlock!=null || e.getAttribute("blockID")=="0")
 		{
 			return;
 		}
-		var horz = e.getAttribute("horz");
-		var vertz = e.getAttribute("vertz");
-		var curChunk = BCEngine.map.chunk1[horz];
+		//Create and set all the crack overlay attributes
+		var crackOverlay = document.createElement("div");
+		crackOverlay.setAttribute("class", "crack");
+		BCEngine.playArea.appendChild(crackOverlay);
 		
-		var tempChunk = curChunk.substring(0,vertz);
-		tempChunk+= "0";
-		tempChunk+= curChunk.substring(Number(vertz)+1,curChunk.length);
-		BCEngine.map.chunk1[horz]=tempChunk;	
+		var eStyle=window.getComputedStyle(e);
+		crackOverlay.style.top = eStyle.top;
+		crackOverlay.style.left = eStyle.left;
+		crackOverlay.style.width = BCEngine.cubeSize;
+		crackOverlay.style.height = BCEngine.cubeSize;
 		
-		e.setAttribute("blockID", "0");
-		e.style.background="lightblue";
+		BCEngine.blockDestruction.lastReferredBlock = crackOverlay;
+		
+		BCEngine.blockDestruction.lastRunningTimer = setTimeout(BCEngine.removeBlock, (Number(e.getAttribute("strength"))*1000), e);
+	}
+	
+}
+//Removes the crack images and stops the timer (if destroying block halfway)
+BCEngine.eventHandlers.mouseUpEvent = function(e)
+{
+	if(BCEngine.blockDestruction.lastRunningTimer!=null)
+	{
+		clearTimeout(BCEngine.blockDestruction.lastRunningTimer);
+	}
+	if(BCEngine.blockDestruction.lastReferredBlock!=null)
+	{
+		BCEngine.playArea.removeChild(BCEngine.blockDestruction.lastReferredBlock);
+		BCEngine.blockDestruction.lastReferredBlock=null;
 	}
 	return false;
 }
-
 //Place a block depending on BCEngine.currentSelection
 BCEngine.eventHandlers.rightClickEvent = function(e)
 {
@@ -326,6 +370,7 @@ BCEngine.eventHandlers.rightClickEvent = function(e)
 	BCEngine.map.chunk1[horz]=tempChunk;
 
 	e.setAttribute("blockID", BCEngine.objects[BCEngine.currentSelection].id);
+	e.setAttribute("strength", BCEngine.objects[BCEngine.currentSelection].strength);
 	e.style.backgroundImage="url("+BCEngine.objects[BCEngine.currentSelection].img+")";
 	e.style.backgroundRepeat="repeat";
 	e.style.backgroundSize="100% 100%";
@@ -395,8 +440,8 @@ window.onload=function()
 	//Sets all the event listeners
 	document.onkeydown=BCEngine.eventHandlers.keyDownEvent;
 	document.onkeyup=BCEngine.eventHandlers.keyUpEvent;
+	document.addEventListener('mousedown', function(e){BCEngine.eventHandlers.mouseDownEvent(e);return false;}, false);
 	document.addEventListener('mouseup', BCEngine.eventHandlers.mouseUpEvent, false);
-	document.addEventListener('mousedown', function(){return false}, false);
 	document.oncontextmenu=BCEngine.eventHandlers.rightClickEvent;
 	document.addEventListener('DOMMouseScroll', BCEngine.eventHandlers.scrollEvent, false);
 	document.onmousewheel = BCEngine.eventHandlers.scrollEvent;

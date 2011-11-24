@@ -25,7 +25,16 @@
 	background:black;
 	z-index:1;
 }
-
+.crack{
+	position:absolute;
+	top:0;
+	left:0;
+	width:0;
+	height:0;
+	background:url(crack.png);
+	background-repeat:none;
+	background-size:100%;
+}
 #playBox{
 	position:absolute;
 	top:0;
