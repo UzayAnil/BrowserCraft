@@ -114,9 +114,9 @@ BCEngine.renderChunk = function(chunk)
 	BCEngine.playArea.innerHTML = "";
 	
 	//For each row, render every block in it.
-	for(var i = 0; i < chunk.length; i++)
+	for(var i = 0, len=chunk.length; i < len; i++)
 	{
-		for(var i2 = 0; i2 < chunk[i].length; i2++)
+		for(var i2 = 0, len2=chunk[i].length; i2 < len2; i2++)
 		{
 			//Creates block then displays it
 			var block = document.createElement("div");
@@ -416,7 +416,7 @@ BCEngine.utils.ceilFoot = function(playerFoot)
 		cubeSizes.push(BCEngine.cubeSize*i);
 	}
 	var nearest;
-	for(var h = 0; h < cubeSizes.length; h++)
+	for(var h = 0, len=cubeSizes.length; h < len; h++)
 	{
 		
 		if(playerFoot<cubeSizes[h])
@@ -440,7 +440,7 @@ BCEngine.utils.ceilHori = function(playerFoot)
 		cubeSizes.push(BCEngine.cubeSize*i);
 	}
 	var nearest;
-	for(var h = 0; h < cubeSizes.length; h++)
+	for(var h = 0, len=cubeSizes.length; h < len; h++)
 	{
 		
 		if( playerFoot< cubeSizes[h])
