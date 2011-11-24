@@ -46,12 +46,12 @@ id: The block ID. (The renderer uses the same ID's to render a chunk)
 */
 
 BCEngine.objects=[];
-BCEngine.objects[0]={name:"Stone",img:"stone.png",id:"1"};
-BCEngine.objects[1]={name:"Cobblestone",img:"cobble.png", id:"2"};
-BCEngine.objects[2]={name:"Dirt",img:"dirt.png", id:"3"};
-BCEngine.objects[3]={name:"Grass",img:"grass.png", id:"4"};
-BCEngine.objects[4]={name:"Plank",img:"plank.png",id:"5"};
-BCEngine.objects[5]={name:"Brick",img:"brick.png",id:"6"};
+BCEngine.objects[0]={name:"Stone",img:"stone.png",id:"1", strength:"10"};
+BCEngine.objects[1]={name:"Cobblestone",img:"cobble.png", id:"2", strength:"10"};
+BCEngine.objects[2]={name:"Dirt",img:"dirt.png", id:"3", strength:"2"};
+BCEngine.objects[3]={name:"Grass",img:"grass.png", id:"4", strength:"2"};
+BCEngine.objects[4]={name:"Plank",img:"plank.png",id:"5", strength:"5"};
+BCEngine.objects[5]={name:"Brick",img:"brick.png",id:"6", strength:"15"};
 
 //Key Presses to determine if a key is being pressed or not.
 BCEngine.keyPresses = new Object();
