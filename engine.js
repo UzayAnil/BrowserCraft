@@ -80,9 +80,15 @@ BCEngine.createEnvBoxes=function()
 	evn2.setAttribute("id","evn2");
 	document.getElementById("envBox").appendChild(evn2);
 	
+	//Creates right-side envelope box.
+	var evn3 = document.createElement("div");
+	evn3.setAttribute("id","evn3");
+	document.getElementById("envBox").appendChild(evn3);
+	
 	//Displays the created envelope boxes.
-	evn1.style.height = BCEngine.evnBoxSize + "px"
-	evn2.style.height = BCEngine.evnBoxSize + "px"
+	evn1.style.height = BCEngine.evnBoxSize + "px";
+	evn2.style.height = BCEngine.evnBoxSize + "px";
+	evn3.style.width = (BCEngine.width - (BCEngine.cubeSize*16))+"px";
 
 }
 
@@ -137,7 +143,6 @@ BCEngine.renderChunk = function(chunk)
 				
 				//If the created block is not air, get the background url from the BCEngine.objects object.
 				var accessNum = Number( chunk[i].substr(i2,1) ) - 1;
-				console.log(BCEngine.objects[ accessNum ].img);
 				block.style.background="url(" + BCEngine.objects[ accessNum ].img + ")";
 				
 				//Then give it the neccessary style attributes.
@@ -188,7 +193,6 @@ BCEngine.startPhysics = function()
 	var playerOn = BCEngine.map.chunk1[playerFoot].substr(playerHori,1);
 	//The block the player is stepping on, from it's left "foot" (The lower left hand corner of the player box)
 	var playerOn2 = BCEngine.map.chunk1[playerFoot].substr(playerHori-1,1);
-	
 	//If player is stepping on air, fall
 	if(playerOn=="0" && playerOn2=="0")
 	{
@@ -348,7 +352,7 @@ window.onload=function()
 	//Sets the height, width and cubeSize variables
 	BCEngine.height = window.innerHeight;
 	BCEngine.width = window.innerWidth;
-	BCEngine.cubeSize = (BCEngine.width / 16);
+	BCEngine.cubeSize = Math.floor(BCEngine.width / 16);
 	
 	//This is here because currently only 1 chunk is playable. In the future, this won't be here and
 	//chunks will render automatically.

@@ -16,6 +16,16 @@
 	background:black;
 }
 
+#evn3{
+	position:absolute;
+	top:0;
+	right:0;
+	width:0px;
+	height:100%;
+	background:black;
+	z-index:1;
+}
+
 #playBox{
 	position:absolute;
 	top:0;
