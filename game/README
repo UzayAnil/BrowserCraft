@@ -1,0 +1,49 @@
+================
+= BrowserCraft =
+================
+
+Author: Nareshkumar Rao
+Copyright: Nareshkumar Rao 2010
+
+Live Demo: http://cheatulo.us/mc/mcHTML.html
+
+BrowserCraft is a 2D recreation of the popular game MineCraft by Mojang. I am hoping that this will be able to reach a level better than other MineCraft clones and such as popular 2D clone Terraria.
+
+I am not trying to re-invent the wheel since there is already another 2D recreation (Terraria). But I am hoping that BrowserCraft will push the frontiers of browser gameplay. Especially with games such as MineCraft.
+
+I am also hoping to get as many features available in the original MineCraft into BrowserCraft as possible. This means all the mobs, their intelligence and all the physics available in MineCraft.
+
+Currently, I have already set up a map renderer (Manual Map-Making) to render a world chunk. A world chunk is a 5x16 playable area. (Currently, there is only one playable chunk and the chunk loading code hasn't been written).
+
+There are only 6 playable blocks so far:
+Stone
+Cobblestone
+Grass
+Dirt
+Plank
+Brick
+
+
+Basic block breaking has been setup(A single click breaks any block).
+
+Block placing has not been setup is working 
+Note: Selected Block will show in the Title Bar. This will be changed.
+
+Basic player movement works but still very buggy.
+
+I need all the help I can get to make this a success. So please, consider this as my humble invitation to join in on developing BrowserCraft.
+
+
+
+Controls
+
+Moving Left: Left Arrow Key
+Moving Right: Right Arrow Key
+Jumping: Spacebar
+(Note: The movements are VERY VERY BUGGY.)
+
+Destroy Block: Left-Click
+Place Block: Right-Click
+
+Select Block: Scroll Wheel
+(Look in Title Bar for Selected Block)
