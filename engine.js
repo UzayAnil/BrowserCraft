@@ -10,32 +10,67 @@ Copyright: All parts of this document and the BrowserCraft project belongs to Na
 */
 
 //Global Variable Initialization Begins.
-var BCEngine = new Object();
+var BCEngine = 
+{
+	//The Height and Width of the Screen.
+height:0,
+width:0,
 
-//The Height and Width of the Screen.
-BCEngine.height=0;
-BCEngine.width=0;
+	//Size of each cube.
+cubeSize:0,
 
-//Size of each cube.
-BCEngine.cubeSize=0;
+	//Size (Height) of the Envelope Boxes.
+evnBoxSize:0,
 
-//Size (Height) of the Envelope Boxes.
-BCEngine.evnBoxSize=0;
+	//Reference to the playArea HTML DIV.
+playArea:null,
 
-//Reference to the playArea HTML DIV.
-BCEngine.playArea=null;
+	//Reference to the player HTML DIV.
+player:null,
 
-//Reference to the player HTML DIV.
-BCEngine.player=null;
+	//Currently selected block.
+currentSelection:0,
 
-//Currently selected block.
-BCEngine.currentSelection=0;
+	//Speed of gravity
+gravity:3,
 
-//The map object holds all the chunks(for future, currently only 1 chunk)
-BCEngine.map=new Object();
+	//The map object holds all the chunks(for future, currently only 1 chunk)
+map:{
+		//Initiailizes the chunk (In future all chunks will be initialized automatically)
+chunk1:null
+	},
+	
+	//Key Presses to determine if a key is being pressed or not.
+keyPresses:{
+isLeft:false,
+isRight:false
+	},
 
-//Initiailizes the chunk (In future all chunks will be initialized automatically)
-BCEngine.map.chunk1=null;
+sliding:{
+isSliding:false,
+curSpeed:0,
+slideDirection:"right"
+	},
+
+blockDestruction:{
+lastReferredBlock:null,
+lastRunningTimer:null
+	},
+
+	//The handlers for all the events.
+eventHandlers:{},
+	
+	//These utils include functions to help calculate certain values needed for physics/etc.
+utils:{},
+
+Block:function(name,id,strength)
+	{
+		this.name = name;
+		this.id = id;
+		this.strength = strength;
+		this.img = name.toLowerCase()+".png";
+	}
+}
 
 /*The available and playable blocks.
 
@@ -44,37 +79,16 @@ img: The linked image of the block.
 id: The block ID. (The renderer uses the same ID's to render a chunk)
 
 */
+BCEngine.objects=[
+new BCEngine.Block("Stone",1,2),
+new BCEngine.Block("Cobblestone",2,2),
+new BCEngine.Block("Dirt",3,0.5),
+new BCEngine.Block("Grass",4,0.5),
+new BCEngine.Block("Plank",5,1.5),
+new BCEngine.Block("Brick",6,4)
+]
 
-BCEngine.objects=[];
-BCEngine.objects[0]={name:"Stone",img:"stone.png",id:"1", strength:"2"};
-BCEngine.objects[1]={name:"Cobblestone",img:"cobble.png", id:"2", strength:"2"};
-BCEngine.objects[2]={name:"Dirt",img:"dirt.png", id:"3", strength:"0.5"};
-BCEngine.objects[3]={name:"Grass",img:"grass.png", id:"4", strength:"0.5"};
-BCEngine.objects[4]={name:"Plank",img:"plank.png",id:"5", strength:"1.5"};
-BCEngine.objects[5]={name:"Brick",img:"brick.png",id:"6", strength:"4"};
-
-//Key Presses to determine if a key is being pressed or not.
-BCEngine.keyPresses = new Object();
-BCEngine.keyPresses.isLeft=false;
-BCEngine.keyPresses.isRight=false;
-
-//These utils include functions to help calculate certain values needed for physics/etc.
-BCEngine.utils = new Object();
-
-BCEngine.gravity=3;
-BCEngine.sliding = new Object();
-BCEngine.sliding.isSliding = false;
-BCEngine.sliding.curSpeed=0;
-BCEngine.sliding.slideDirection="right";
-
-BCEngine.blockDestruction=new Object();
-BCEngine.blockDestruction.lastReferredBlock=null;
-BCEngine.blockDestruction.lastRunningTimer=null;
-
-//The handlers for all the events.
-BCEngine.eventHandlers = new Object();
-
-//This function creates the 2 black envelope boxes.
+//This function creates the 3 black envelope boxes.
 BCEngine.createEnvBoxes=function()
 {
 	//Determine what the size(height) of the envelope box should be.
@@ -159,7 +173,7 @@ BCEngine.renderChunk = function(chunk)
 				
 				//If the created block is not air, get the background url from the BCEngine.objects object.
 				block.style.background="url(" + BCEngine.objects[ accessNum ].img + ")";
-			
+				
 				//Then give it the neccessary style attributes.
 				block.style.backgroundRepeat="repeat";
 				block.style.backgroundSize="100% 100%";
@@ -296,12 +310,12 @@ BCEngine.removeBlock = function(e)
 	var horz = e.getAttribute("horz");
 	var vertz = e.getAttribute("vertz");
 	var curChunk = BCEngine.map.chunk1[horz];
-		
+	
 	var tempChunk = curChunk.substring(0,vertz);
 	tempChunk+= "0";
 	tempChunk+= curChunk.substring(Number(vertz)+1,curChunk.length);
 	BCEngine.map.chunk1[horz]=tempChunk;	
-		
+	
 	e.setAttribute("blockID", "0");
 	e.style.background="lightblue";
 	BCEngine.playArea.removeChild(BCEngine.blockDestruction.lastReferredBlock);
@@ -383,22 +397,22 @@ BCEngine.eventHandlers.scrollEvent = function(e)
 	//e.wheelDelta used by Google Chrome
 	if(e.wheelDelta){
 		var delta = e.wheelDelta / 60;
-			switch(delta)
-			{
-			case 2:
-				BCEngine.currentSelection+=1;
-				if(BCEngine.currentSelection>=BCEngine.objects.length){BCEngine.currentSelection=0}
-				document.title=BCEngine.objects[BCEngine.currentSelection].name;
-				break;
-				
-			case -2:
-				BCEngine.currentSelection-=1;
-				if(BCEngine.currentSelection<=-1){BCEngine.currentSelection=BCEngine.objects.length-1}
-				document.title=BCEngine.objects[BCEngine.currentSelection].name;
-				break;
-				
-			}
-		}else{
+		switch(delta)
+		{
+		case 2:
+			BCEngine.currentSelection+=1;
+			if(BCEngine.currentSelection>=BCEngine.objects.length){BCEngine.currentSelection=0}
+			document.title=BCEngine.objects[BCEngine.currentSelection].name;
+			break;
+			
+		case -2:
+			BCEngine.currentSelection-=1;
+			if(BCEngine.currentSelection<=-1){BCEngine.currentSelection=BCEngine.objects.length-1}
+			document.title=BCEngine.objects[BCEngine.currentSelection].name;
+			break;
+			
+		}
+	}else{
 		//e.detail used by FireFox
 		var delta = e.detail;
 		switch(delta)
