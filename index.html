@@ -1,146 +1,118 @@
-<!DOCTYPE html>
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-  <meta charset='utf-8'>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>BrowserCraft - MineCraft In Your Browser</title>
 
-  <title>naresh97/BrowserCraft @ GitHub</title>
 
-  <style type="text/css">
-    body {
-      margin-top: 1.0em;
-      background-color: #07ee01;
-      font-family: Helvetica, Arial, FreeSans, san-serif;
-      color: #ffffff;
-    }
-    #container {
-      margin: 0 auto;
-      width: 700px;
-    }
-    h1 { font-size: 3.8em; color: #f811fe; margin-bottom: 3px; }
-    h1 .small { font-size: 0.4em; }
-    h1 a { text-decoration: none }
-    h2 { font-size: 1.5em; color: #f811fe; }
-    h3 { text-align: center; color: #f811fe; }
-    a { color: #f811fe; }
-    .description { font-size: 1.2em; margin-bottom: 30px; margin-top: 30px; font-style: italic;}
-    .download { float: right; }
-    pre { background: #000; color: #fff; padding: 15px;}
-    hr { border: 0; width: 80%; border-bottom: 1px solid #aaa}
-    .footer { text-align:center; padding-top:30px; font-style: italic; }
-  </style>
+<style type="text/css">
+body{
+	background:url(img/blackMatteBackground.jpg);	
+}
+
+#header{
+	background:url(img/header.png);
+	
+	width:931px;
+	height:200px;
+	
+	margin-left:auto;
+	margin-right:auto;
+
+	
+}
+#frame{
+	
+	width:911px;
+	height:768px;
+	margin-left:auto;
+	margin-right:auto;
+	border-top:none;
+	border-color:#333;
+	border:solid;
+	border-width:10px;
+
+}
+#frame iframe{
+	width:100%;
+	height:100%;
+	border:none;
+}
+#title
+{
+	color:white;
+	font-size:48px;
+	font-family:sans-serif;
+	left:135px;
+	position:relative;
+	top: 40px;
+}
+#subtitle
+{
+	color:white;
+	font-size:24px;
+	font-family:sans-serif;
+	left:135px;
+	position:relative;
+	top: 40px;
+	font-style: italic;
+}
+#menu{
+	color:white;
+	font-size:18px;
+	font-family:Arial, Helvetica, sans-serif;
+	font-weight:400;
+	left:135px;
+	width:661px;
+	position:relative;
+	top: 90px;
+}
+
+#menu td{
+	background-color:#0B0B0B;
+	cursor:pointer;
+	
+}
+#footnote{
+	font-size:11px;
+	color:white;
+	text-align:center;
+}
+#download{
+	position:fixed;	
+}
+</style>
+
 </head>
-
 <body>
-  <a href="https://github.com/naresh97/BrowserCraft"><img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" /></a>
-
-  <div id="container">
-
-    <div class="download">
-      <a href="https://github.com/naresh97/BrowserCraft/zipball/master">
-        <img border="0" width="90" src="https://github.com/images/modules/download/zip.png"></a>
-      <a href="https://github.com/naresh97/BrowserCraft/tarball/master">
-        <img border="0" width="90" src="https://github.com/images/modules/download/tar.png"></a>
+<div id="download">
+<a href="https://github.com/naresh97/BrowserCraft/zipball/master">
+<img border="0" width="90" src="https://github.com/images/modules/download/zip.png"></a>
+</div>
+<div id="header">	
+	<div id="title">
+        BrowserCraft
+</div>
+<div id="subtitle">2D Minecraft In Your Browser</div>
+    
+	<div id="menu">
+    	<table width="661">
+        	<tr>
+           	  <td goto="./home.html" onclick="document.getElementById('theFrame').src=this.getAttribute('goto');">Home</td>
+              <td goto="./installation.html" onclick="document.getElementById('theFrame').src=this.getAttribute('goto');">Installation</td>
+                 <td goto="./license.html" onclick="document.getElementById('theFrame').src=this.getAttribute('goto');">License</td>
+                <td goto="https://github.com/naresh97/BrowserCraft/zipball/master" onclick="document.getElementById('theFrame').src=this.getAttribute('goto');">Download</td>
+         <td onclick="document.location='./BrowserCraft/mcHTML.html'">Play</td>
+            </tr>
+        </table>
     </div>
+</div>
+<div id="frame">
+<iframe id="theFrame" src="home.html"></iframe>
+</div>
 
-    <h1><a href="https://github.com/naresh97/BrowserCraft">BrowserCraft</a>
-      <span class="small">by <a href="https://github.com/naresh97">naresh97</a></span></h1>
-
-    <div class="description">
-      A 2D version of MineCraft written in pure HTML and JavaScript.
-    </div>
-
-    
-      <p>BrowserCraft is a 2D recreation of the popular game MineCraft by Mojang. I am hoping that this will be able to reach a level better than other MineCraft clones and such as popular 2D clone Terraria.
-
-I am not trying to re-invent the wheel since there is already another 2D recreation (Terraria). But I am hoping that BrowserCraft will push the frontiers of browser gameplay. Especially with games such as MineCraft.
-
-I am also hoping to get as many features available in the original MineCraft into BrowserCraft as possible. This means all the mobs, their intelligence and all the physics available in MineCraft.
-
-Currently, I have already set up a map renderer (Manual Map-Making) to render a world chunk. A world chunk is a 5x16 playable area. (Currently, there is only one playable chunk and the chunk loading code hasn't been written).
-
-There are only 6 playable blocks so far:
-
-    Stone
-    Cobblestone
-    Grass
-    Dirt
-    Plank
-    Brick
-
-
-
-Basic block breaking has been setup(A single click breaks any block).
-
-Block placing is working :D
-Note: Selected Block will show in the Title Bar. This will be changed.
-
-Basic player movement works but still very buggy.
-
-I need all the help I can get to make this a success. So please, consider this as my humble invitation to join in on developing BrowserCraft.
-
-
-
-Controls
-
-Moving Left: Left Arrow Key
-Moving Right: Right Arrow Key
-Jumping: Spacebar
-(Note: The movements are VERY VERY BUGGY.)
-
-Destroy Block: Left-Click
-Place Block: Right-Click
-
-Select Block: Scroll Wheel
-(Look in Title Bar for Selected Block)
-</p>
-    
-
-    
-      <h2>Dependencies</h2>
-      <p>A HTML Browser (Currently Google Chrome and Firefox)
-
-More Browser Supports Coming Soon</p>
-    
-
-    
-      <h2>Install</h2>
-      <p>Download everything to your computer, then run mcHTML.html in your browser, alternatively, you may upload it to a server.</p>
-    
-
-    
-      <h2>License</h2>
-      <p>All Textures Belongs to Mojang and Notch</p>
-      <p>The engine.js : Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported License.</p>
-    
-
-    
-      <h2>Authors</h2>
-      <p>Nareshkumar Rao (inaresh.online@gmail.com)
-<br/>      </p>
-    
-
-    
-      <h2>Contact</h2>
-      <p>Nareshkumar Rao (inaresh.online@gmail.com)
-<br/>      </p>
-    
-
-    <h2>Download</h2>
-    <p>
-      You can download this project in either
-      <a href="https://github.com/naresh97/BrowserCraft/zipball/master">zip</a> or
-      <a href="https://github.com/naresh97/BrowserCraft/tarball/master">tar formats.
-    </p>
-    <p>You can also clone the project with <a href="http://git-scm.com">Git</a>
-      by running:
-      <pre>$ git clone git://github.com/naresh97/BrowserCraft</pre>
-    </p>
-
-    <div class="footer">
-      get the source code on GitHub : <a href="https://github.com/naresh97/BrowserCraft">naresh97/BrowserCraft</a>
-    </div>
-
-  </div>
-
+<div id="footnote">
+Copyright Nareshkumar Rao 2011. Sample Site by Nareshkumar Rao.
+</div>
 </body>
 </html>
